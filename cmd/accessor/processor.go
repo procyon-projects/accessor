@@ -19,6 +19,10 @@ import (
 	"github.com/procyon-projects/marker"
 )
 
+var (
+	accessorInterfaces []marker.InterfaceType
+)
+
 // Register your marker definitions.
 func RegisterDefinitions(registry *marker.Registry) error {
 	markers := []struct {
@@ -43,9 +47,31 @@ func RegisterDefinitions(registry *marker.Registry) error {
 // Process your markers.
 func ProcessMarkers(collector *marker.Collector, pkgs []*marker.Package) error {
 	marker.EachFile(collector, pkgs, func(file *marker.File, err error) {
-		if err != nil {
-
-		}
+		findAccessorInterfaces(file.InterfaceTypes)
 	})
 	return nil
+}
+
+func findAccessorInterfaces(interfaceTypes []marker.InterfaceType) {
+	for _, interfaceType := range interfaceTypes {
+		markerValues := interfaceType.Markers
+
+		if markerValues == nil {
+			return
+		}
+
+		markers, ok := markerValues[MarkerAccessor]
+
+		if !ok {
+			return
+		}
+
+		for _, candidateMarker := range markers {
+			switch candidateMarker.(type) {
+			case AccessorMarker:
+				accessorInterfaces = append(accessorInterfaces, interfaceType)
+			}
+		}
+
+	}
 }
