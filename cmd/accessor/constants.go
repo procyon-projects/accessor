@@ -18,4 +18,5 @@ package main
 const (
 	AppName    = "accessor"
 	AppVersion = "1.0.0"
+	PkgId      = "github.com/procyon-projects/accessor"
 )

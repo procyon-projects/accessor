@@ -21,12 +21,31 @@ import (
 
 // Register your marker definitions.
 func RegisterDefinitions(registry *marker.Registry) error {
-	/* your code goes here */
+	markers := []struct {
+		Name   string
+		Level  marker.TargetLevel
+		Output interface{}
+	}{
+		{Name: MarkerAccessor, Level: marker.InterfaceTypeLevel, Output: &AccessorMarker{}},
+		{Name: MarkerAccessorMapping, Level: marker.InterfaceMethodLevel, Output: &AccessorMappingMarker{}},
+	}
+
+	for _, m := range markers {
+		err := registry.Register(m.Name, PkgId, m.Level, m.Output)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
 // Process your markers.
 func ProcessMarkers(collector *marker.Collector, pkgs []*marker.Package) error {
-	/* your code goes here */
+	marker.EachFile(collector, pkgs, func(file *marker.File, err error) {
+		if err != nil {
+
+		}
+	})
 	return nil
 }
